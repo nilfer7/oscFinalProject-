@@ -28,12 +28,19 @@ file_creator : file_creator.c
 	@echo "$(TITLE_COLOR)\n***** COMPILE & LINKING file_creator *****$(NO_COLOR)"
 	gcc file_creator.c -o file_creator -Wall -fdiagnostics-color=auto
 
-#test client
+#test client (runs infinitely by default - use killall sensor_node to stop)
 sensor_node : sensor_node.c lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
 	gcc -c sensor_node.c -Wall -std=c11 -Werror -o sensor_node.o -fdiagnostics-color=auto
 	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node *****$(NO_COLOR)"
 	gcc sensor_node.o -ltcpsock -o sensor_node -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
+
+#test client with finite loops (stops after 10 measurements)
+sensor_node_test : sensor_node.c lib/libtcpsock.so
+	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node_test (10 iterations) *****$(NO_COLOR)"
+	gcc -c sensor_node.c -Wall -std=c11 -Werror -DLOOPS=10 -o sensor_node_test.o -fdiagnostics-color=auto
+	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node_test *****$(NO_COLOR)"
+	gcc sensor_node_test.o -ltcpsock -o sensor_node_test -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
 
 # If you only want to compile one of the libs, this target will match (e.g. make liblist)
 libdplist : lib/libdplist.so
